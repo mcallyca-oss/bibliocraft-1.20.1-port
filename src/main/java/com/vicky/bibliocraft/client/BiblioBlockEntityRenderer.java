@@ -30,6 +30,8 @@ public final class BiblioBlockEntityRenderer implements BlockEntityRenderer<Bibl
 
         switch (be.legacyId()) {
             case "table" -> renderTable(be, pose, buffer, packedLight, packedOverlay);
+            case "shelf" -> renderShelf(be, pose, buffer, packedLight, packedOverlay);
+            case "potion_shelf" -> renderPotionShelf(be, pose, buffer, packedLight, packedOverlay);
             case "armor_stand" -> renderArmorStand(be, pose, buffer, packedLight, packedOverlay);
             case "cookie_jar" -> renderCookieJar(be, pose, buffer, packedLight, packedOverlay);
             case "fancy_workbench" -> renderWorkbench(be, pose, buffer, packedLight, packedOverlay);
@@ -45,7 +47,29 @@ public final class BiblioBlockEntityRenderer implements BlockEntityRenderer<Bibl
     private void renderTable(BiblioContainerBlockEntity be, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
         ItemStack display = be.getItem(0);
         if (display.isEmpty()) return;
-        renderItem(display, pose, buffer, light, overlay, .5, .86, .5, 90, 0, .55f);
+        // Coordinates/scale ported from the original BiblioCraft 2.4.6 table renderer.
+        renderItem(display, pose, buffer, light, overlay, .5, 1.14, .5, 0, 0, .75f);
+    }
+
+    private void renderShelf(BiblioContainerBlockEntity be, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
+        // Exact four visible positions from TileEntityShelfRenderer (1.12.2).
+        renderItem(be.getItem(0), pose, buffer, light, overlay, .25, .66, .25, 0, 0, .60f);
+        renderItem(be.getItem(1), pose, buffer, light, overlay, .75, .66, .25, 0, 0, .60f);
+        renderItem(be.getItem(2), pose, buffer, light, overlay, .25, .17, .25, 0, 0, .60f);
+        renderItem(be.getItem(3), pose, buffer, light, overlay, .75, .17, .25, 0, 0, .60f);
+    }
+
+    private void renderPotionShelf(BiblioContainerBlockEntity be, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
+        // Exact 4 x 3 slot coordinates from TileEntityPotionShelfRenderer (1.12.2).
+        double[] xs = {.15, .38, .61, .84};
+        double[] ys = {.81, .48, .13};
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 4; col++) {
+                int slot = row * 4 + col;
+                double z = (slot == 1 || slot == 3 || slot == 4 || slot == 6 || slot == 9 || slot == 11) ? .26 : .25;
+                renderItem(be.getItem(slot), pose, buffer, light, overlay, xs[col], ys[row], z, 0, 0, .42f);
+            }
+        }
     }
 
     private void renderArmorStand(BiblioContainerBlockEntity be, PoseStack pose, MultiBufferSource buffer, int light, int overlay) {
