@@ -115,7 +115,6 @@ public class BiblioContainerBlock extends BaseEntityBlock {
         carrier.setInvisible(true);
         carrier.setInvulnerable(true);
         carrier.setNoGravity(true);
-        carrier.setMarker(true);
         carrier.getPersistentData().putLong("BiblioSeatPos", pos.asLong());
         level.addFreshEntity(carrier);
         player.startRiding(carrier, true);
